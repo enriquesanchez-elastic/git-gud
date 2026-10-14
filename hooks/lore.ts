@@ -331,15 +331,21 @@ export const newTrophies = (s: GitGudStats): Trophy[] =>
 export const GUIDE = `**git-gud: how to play**
 
 **The status line**
-\`Lv 3 · ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 300 · 🔥 ×1.25\`
+\`Lv 3 · ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 300 to recover · 🔥 ×1.25\`
 - \`Lv\`: your level. 🔥 \`×\`: your streak bonus (only shown above ×1).
-- \`ᚱ\`: runes you hold. \`☠\`: lifetime deaths (it only goes up).
-- 🩸: runes waiting at your bloodstain.
+- \`ᚱ 1,240\`: your runes. Runes are the game's points: you earn them by working.
+- \`☠ 12\`: how many times you have died, ever (it only goes up).
+- \`🩸 ᚱ 300 to recover\`: runes you dropped when you last died, waiting to be picked up again.
 
-**Runes, death and the bloodstain**
+**Runes: points you can lose**
 - Edits and successful commands earn runes. Tests and commits earn the most.
-- A failed command (or a failed edit) is a **death**: YOU DIED, and every rune you hold drops at a bloodstain, filed under the command that killed you.
-- Succeed at that same command to retrieve them. Die again first and the old bloodstain is lost forever.
+- Runes are at risk. If a command **fails**, you **die** (YOU DIED) and every rune you hold is dropped.
+
+**The bloodstain: getting them back**
+Think of it as a lost wallet. When you die, the runes you dropped are left at a bloodstain (the name comes from Dark Souls), tagged with the command that killed you.
+- Succeed at **that same command** and you pick the runes back up.
+- Die again before you do and that stash is gone for good. Only one stash exists at a time.
+- Example: \`npm test\` fails while you hold 800 runes. You drop all 800 (🩸 ᚱ 800 to recover). Fix the bug, run \`npm test\` green, and the 800 come back, plus the reward for passing.
 - Probing commands (\`grep\`, \`ls\`, \`git diff\`…) don't kill you unless hardcore mode is on.
 
 **Enemies and bonfires**

@@ -13,8 +13,8 @@ A Claude Code mod that turns your terminal into a Souls-like. Commands fail, you
 
 | When | What happens |
 | --- | --- |
-| A command fails | **YOU DIED** in blood red above the prompt. Your runes drop at a bloodstain, filed under the command that killed you. |
-| You succeed at the command that killed you | You retrieve the bloodstain. Die again first and the old one is lost forever. |
+| A command fails | **YOU DIED** in blood red above the prompt. Your runes drop at a bloodstain (a stash of the runes you lost, tagged with the command that killed you). |
+| You succeed at the command that killed you | You pick the runes back up. Die again first and the old one is lost forever. |
 | Claude edits a file | Runes. An `Edit` whose `old_string` isn't there is a death too. |
 | Tests pass | **ENEMY FELLED**. If they were failing before: **GREAT ENEMY FELLED** and a pile of runes. |
 | `git commit` | **BONFIRE LIT**. Checkpoint saved. |
@@ -28,7 +28,7 @@ A Claude Code mod that turns your terminal into a Souls-like. Commands fail, you
 
 Successes in a row build a **streak**: +25% runes per five, up to double. Dying breaks it.
 
-Your level, runes, deaths and bloodstain live in the status line (`ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 3,400`) and persist across sessions, so the death counter only ever goes up.
+Your level, runes, deaths and bloodstain live in the status line (`Lv 3 · ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 3,400 to recover`) and persist across sessions, so the death counter only ever goes up.
 
 A `grep` that finds nothing doesn't kill you (probing commands are exempt). Turn on **hardcore mode** and it does.
 

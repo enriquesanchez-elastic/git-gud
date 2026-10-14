@@ -136,7 +136,7 @@ async function change($: EngineInterface, fn: (s: GitGudStats) => void) {
 
 function showStatus($: EngineInterface) {
   const stain = stats.bloodstain
-    ? ` · 🩸 ᚱ ${runesText(stats.bloodstain.runes)}`
+    ? ` · 🩸 ᚱ ${runesText(stats.bloodstain.runes)} to recover`
     : ''
 
   const bonus = streakMultiplier(stats.streak)

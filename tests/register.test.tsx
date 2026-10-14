@@ -139,6 +139,9 @@ describe('register', () => {
       runes: 0,
       bloodstain: { runes: earned, killer: 'npm test' },
     })
+    expect(w.statuses.at(-1), 'the status says what the stain is').toContain(
+      `🩸 ᚱ ${earned} to recover`,
+    )
 
     await w.clock.advance(6000)
     expect(await banner($), 'the banner fades').not.toContain('D I E D')
@@ -380,7 +383,7 @@ describe('register', () => {
 
     const res = JSON.stringify(await run($, 'bonfire', 'help'))
 
-    for (const word of ['Lv', 'bloodstain', 'streak', 'trophies', '/soapstone', 'hardcore']) {
+    for (const word of ['Lv', 'bloodstain', 'to recover', 'streak', 'trophies', '/soapstone', 'hardcore']) {
       expect(res, word).toContain(word)
     }
   })
