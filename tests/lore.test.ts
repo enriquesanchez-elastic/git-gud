@@ -1,6 +1,79 @@
 import { describe, expect, test } from 'claude-code/testing'
 
-import { isFogWall, killerOf, kindOf, lastSegment, runesText, soapstone } from '../hooks/lore'
+import {
+  isFogWall,
+  killerOf,
+  kindOf,
+  lastSegment,
+  levelCost,
+  newTrophies,
+  runesText,
+  soapstone,
+  streakMultiplier,
+  titleOf,
+} from '../hooks/lore'
+
+const FRESH_STATS = {
+  deaths: 0,
+  runes: 0,
+  felled: 0,
+  greatFelled: 0,
+  bonfires: 0,
+  bloodstain: null,
+  testsFailing: false,
+  level: 1,
+  streak: 0,
+  deathStreak: 0,
+  fogsCrossed: 0,
+  trophies: [] as string[],
+}
+
+describe('progression', () => {
+  test('each level costs more than the last', async () => {
+    expect(levelCost(1)).toBe(500)
+    expect(levelCost(2)).toBe(1000)
+    expect(levelCost(10)).toBeGreaterThan(levelCost(9))
+  })
+
+  test('streaks multiply runes by 25% per five, capped at double', async () => {
+    expect(streakMultiplier(0)).toBe(1)
+    expect(streakMultiplier(4)).toBe(1)
+    expect(streakMultiplier(5)).toBe(1.25)
+    expect(streakMultiplier(10)).toBe(1.5)
+    expect(streakMultiplier(20)).toBe(2)
+    expect(streakMultiplier(500)).toBe(2)
+  })
+
+  test('levels earn a title', async () => {
+    expect(titleOf(1)).toBe('Hollow')
+    expect(titleOf(2)).toBe('Wanderer')
+    expect(titleOf(7)).toBe('Knight')
+    expect(titleOf(99)).toBe('Elden Lord')
+  })
+
+  test('trophies are earned once, from the stats', async () => {
+    expect(newTrophies(FRESH_STATS)).toEqual([])
+
+    const dead = { ...FRESH_STATS, deaths: 1 }
+    expect(newTrophies(dead).map(t => t.id)).toEqual(['first-blood'])
+
+    const had = { ...dead, trophies: ['first-blood'] }
+    expect(newTrophies(had)).toEqual([])
+
+    const many = {
+      ...FRESH_STATS,
+      deathStreak: 3,
+      streak: 20,
+      bonfires: 10,
+      fogsCrossed: 1,
+      greatFelled: 1,
+      level: 5,
+    }
+    expect(newTrophies(many).map(t => t.id).sort()).toEqual(
+      ['ascended', 'fall-guy', 'fog-diver', 'git-gud', 'great-hunter', 'untouchable'].sort(),
+    )
+  })
+})
 
 describe('lore', () => {
   test('reads what kind of foe a command is', async () => {

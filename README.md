@@ -26,13 +26,17 @@ A Claude Code mod that turns your terminal into a Souls-like. Commands fail, you
 | A session starts | A message from another Tarnished: *"Be wary of Friday deploy, therefore try rubber duck"* (appraised 412 times) |
 | You type `git gud` as a prompt | It's dropped. Thou art already gud. |
 
-Your runes, deaths and bloodstain live in the status line (`ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 3,400`) and persist across sessions, so the death counter only ever goes up.
+Successes in a row build a **streak**: +25% runes per five, up to double. Dying breaks it.
+
+Your level, runes, deaths and bloodstain live in the status line (`ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 3,400`) and persist across sessions, so the death counter only ever goes up.
 
 A `grep` that finds nothing doesn't kill you (probing commands are exempt). Turn on **hardcore mode** and it does.
 
 ### Commands
 
 - `/bonfire` — rest a moment: runes held, deaths, enemies felled, bonfires lit, where your bloodstain is, and a verdict.
+- `/bonfire level` — spend runes to rise a level (cost grows each time). Level gives you a title: Hollow, Wanderer, Tarnished, Knight, Champion, Elden Lord.
+- `/bonfire trophies` — your achievements: First Blood, Fall Guy, Git Gud, Great Hunter, Untouchable, Fog Diver, Ascended.
 - `/bonfire rest` — rest for real: compacts the conversation. The enemies respawn.
 - `/soapstone` — read a message from another player.
 - `/soapstone <text>` — scrawl your own. A future you will find it at the start of a later session.

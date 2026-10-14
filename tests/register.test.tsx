@@ -111,6 +111,11 @@ type Stats = {
   greatFelled: number
   bonfires: number
   bloodstain: { runes: number; killer: string } | null
+  level: number
+  streak: number
+  deathStreak: number
+  fogsCrossed: number
+  trophies: string[]
 }
 
 const statsOf = (w: World) => w.mem.stats as Stats
@@ -281,6 +286,92 @@ describe('register', () => {
 
     expect(statsOf(w)).toMatchObject({ deaths: 0, felled: 0, bonfires: 0 })
     expect(statsOf(w).runes).toBeGreaterThan(0)
+  })
+
+  test('/bonfire level spends runes to rise a level', async ($, on) => {
+    const w = world(on, { stats: { runes: 1200, level: 1 } })
+    await $.session.start(SESSION)
+
+    const res = await run($, 'bonfire', 'level')
+
+    expect(JSON.stringify(res)).toContain('Level 2')
+    expect(statsOf(w)).toMatchObject({ level: 2, runes: 700 })
+    expect(w.statuses.at(-1)).toContain('Lv 2')
+  })
+
+  test('/bonfire level refuses when you are short of runes', async ($, on) => {
+    const w = world(on, { stats: { runes: 100, level: 1 } })
+    await $.session.start(SESSION)
+
+    const res = await run($, 'bonfire', 'level')
+
+    expect(JSON.stringify(res)).toContain('500')
+    expect(statsOf(w)).toMatchObject({ level: 1, runes: 100 })
+  })
+
+  test('a streak multiplies the runes earned', async ($, on) => {
+    const w = world(on, { stats: { streak: 20 } })
+    await $.session.start(SESSION)
+
+    await edit($)
+
+    // an edit earns 50-300 runes, doubled at a 20 streak
+    expect(statsOf(w).runes).toBeGreaterThanOrEqual(100)
+    expect(statsOf(w).streak).toBe(21)
+  })
+
+  test('dying breaks the streak', async ($, on) => {
+    const w = world(on, { stats: { streak: 12 } })
+    await $.session.start(SESSION)
+
+    w.failing.add('npm run build')
+    await bash($, 'npm run build')
+
+    expect(statsOf(w)).toMatchObject({ streak: 0, deathStreak: 1 })
+  })
+
+  test('the first death earns a trophy, once', async ($, on) => {
+    const w = world(on)
+    await $.session.start(SESSION)
+
+    w.failing.add('npm run build')
+    await bash($, 'npm run build')
+    await bash($, 'npm run build')
+
+    expect(statsOf(w).trophies).toEqual(['first-blood'])
+    expect(w.toasts.filter(t => t.includes('First Blood'))).toHaveLength(1)
+  })
+
+  test('three deaths in a row make a Fall Guy', async ($, on) => {
+    const w = world(on)
+    await $.session.start(SESSION)
+
+    w.failing.add('npm run build')
+    await bash($, 'npm run build')
+    await bash($, 'npm run build')
+    await bash($, 'npm run build')
+
+    expect(statsOf(w).trophies).toContain('fall-guy')
+  })
+
+  test('surviving a fog wall earns a trophy', async ($, on) => {
+    const w = world(on)
+    await $.session.start(SESSION)
+
+    await bash($, 'rm -rf junk')
+
+    expect(statsOf(w)).toMatchObject({ fogsCrossed: 1 })
+    expect(statsOf(w).trophies).toContain('fog-diver')
+  })
+
+  test('/bonfire trophies lists what you have earned', async ($, on) => {
+    world(on, { stats: { trophies: ['first-blood'] } })
+    await $.session.start(SESSION)
+
+    const res = JSON.stringify(await run($, 'bonfire', 'trophies'))
+
+    expect(res).toContain('First Blood')
+    expect(res).toContain('Fog Diver')
   })
 
   test('npm test || true is not an enemy felled', async ($, on) => {

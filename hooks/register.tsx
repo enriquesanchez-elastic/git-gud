@@ -13,10 +13,15 @@ import {
   isFogWall,
   killerOf,
   kindOf,
+  levelCost,
+  newTrophies,
   pick,
   runesText,
   soapstone,
   SPINNER_WORDS,
+  streakMultiplier,
+  titleOf,
+  TROPHIES,
 } from './lore'
 
 /**
@@ -50,6 +55,11 @@ const FRESH: GitGudStats = {
   bonfires: 0,
   bloodstain: null,
   testsFailing: false,
+  level: 1,
+  streak: 0,
+  deathStreak: 0,
+  fogsCrossed: 0,
+  trophies: [],
 }
 
 const rng = () => Math.random()
@@ -79,9 +89,16 @@ function killerOfCall(e: { tool: string; [k: string]: unknown }): string {
 }
 
 function asStats(value: unknown): GitGudStats {
-  return value && typeof value === 'object'
-    ? { ...FRESH, ...(value as Partial<GitGudStats>) }
-    : { ...FRESH }
+  const merged: GitGudStats =
+    value && typeof value === 'object'
+      ? { ...FRESH, ...(value as Partial<GitGudStats>) }
+      : { ...FRESH }
+
+  merged.trophies = Array.isArray(merged.trophies)
+    ? merged.trophies.filter(t => typeof t === 'string')
+    : []
+
+  return merged
 }
 
 /** The module's own working copy; `$.store` is the record across sessions. */
@@ -103,6 +120,12 @@ async function load($: EngineInterface) {
 async function change($: EngineInterface, fn: (s: GitGudStats) => void) {
   await load($)
   fn(stats)
+
+  for (const trophy of newTrophies(stats)) {
+    stats.trophies = [...stats.trophies, trophy.id]
+    $.ui.toast(`🏆 Trophy: ${trophy.name}. ${trophy.hint}`, { timeoutMs: 6000 })
+  }
+
   const snapshot = { ...stats }
   saving = saving
     .then(() => $.store.set(STATS_KEY, snapshot))
@@ -115,8 +138,11 @@ function showStatus($: EngineInterface) {
     ? ` · 🩸 ᚱ ${runesText(stats.bloodstain.runes)}`
     : ''
 
+  const bonus = streakMultiplier(stats.streak)
+  const streak = bonus > 1 ? ` · 🔥 ×${bonus}` : ''
+
   $.ui.status(
-    `ᚱ ${runesText(stats.runes)} · ☠ ${runesText(stats.deaths)}${stain}`,
+    `Lv ${stats.level} · ᚱ ${runesText(stats.runes)} · ☠ ${runesText(stats.deaths)}${stain}${streak}`,
   )
 }
 
@@ -143,6 +169,8 @@ async function die($: EngineInterface, killer: string, isTests: boolean) {
 
   await change($, s => {
     s.deaths += 1
+    s.deathStreak += 1
+    s.streak = 0
     lost = s.bloodstain?.runes ?? 0
     dropped = s.runes
     s.bloodstain = dropped > 0 ? { runes: dropped, killer } : null
@@ -174,7 +202,9 @@ async function prevail(
   let retrieved = 0
 
   await change($, s => {
-    s.runes += earned
+    s.runes += Math.round(earned * streakMultiplier(s.streak))
+    s.streak += 1
+    s.deathStreak = 0
 
     if (s.bloodstain && s.bloodstain.killer === killer) {
       retrieved = s.bloodstain.runes
@@ -227,6 +257,12 @@ async function judgeBash(
     return
   }
 
+  if (isFogWall(command)) {
+    await change($, s => {
+      s.fogsCrossed += 1
+    })
+  }
+
   switch (kind) {
     case 'tests': {
       const isGreat = stats.testsFailing
@@ -277,8 +313,9 @@ export const register: Register = (on, options) => {
 
     await $.command.register({
       name: 'bonfire',
-      description: 'Rest at a bonfire: your deaths, runes and bloodstain. `rest` compacts (enemies respawn).',
-      argumentHint: '[rest]',
+      description:
+        'Rest at a bonfire: your level, deaths, runes and bloodstain. `level` spends runes to rise, `trophies` lists achievements, `rest` compacts (enemies respawn).',
+      argumentHint: '[level|trophies|rest]',
     })
 
     await $.command.register({
@@ -407,7 +444,36 @@ export const register: Register = (on, options) => {
   on('command.run', { command: 'bonfire' }, async ($, e) => {
     await load($)
 
-    const isResting = (e.args ?? '').trim().toLowerCase() === 'rest'
+    const arg = (e.args ?? '').trim().toLowerCase()
+
+    if (arg === 'level') {
+      const cost = levelCost(stats.level)
+
+      if (stats.runes < cost) {
+        return {
+          text: `Not enough runes. Level ${stats.level + 1} costs ᚱ ${runesText(cost)}; you hold ᚱ ${runesText(stats.runes)}.`,
+        }
+      }
+
+      await change($, s => {
+        s.runes -= cost
+        s.level += 1
+      })
+
+      return {
+        text: `🔥 Level ${stats.level}. You are now a ${titleOf(stats.level)}. (-ᚱ ${runesText(cost)}, next level costs ᚱ ${runesText(levelCost(stats.level))})`,
+      }
+    }
+
+    if (arg === 'trophies') {
+      const rows = TROPHIES.map(t =>
+        stats.trophies.includes(t.id) ? `- 🏆 **${t.name}**: ${t.hint}` : `- ▫️ ${t.name}: ${t.hint}`,
+      )
+
+      return { text: [`**Trophies** ${stats.trophies.length}/${TROPHIES.length}`, '', ...rows].join('\n') }
+    }
+
+    const isResting = arg === 'rest'
     const stain = stats.bloodstain
       ? `ᚱ ${runesText(stats.bloodstain.runes)} at \`${stats.bloodstain.killer}\``
       : 'none'
@@ -423,6 +489,9 @@ export const register: Register = (on, options) => {
       '',
       '| | |',
       '| --- | --- |',
+      `| Level | ${stats.level} · ${titleOf(stats.level)} (next: ᚱ ${runesText(levelCost(stats.level))}) |`,
+      `| Streak | ${stats.streak} (×${streakMultiplier(stats.streak)}) |`,
+      `| Trophies | ${stats.trophies.length}/${TROPHIES.length} |`,
       `| Runes held | ᚱ ${runesText(stats.runes)} |`,
       `| Deaths | ☠ ${runesText(stats.deaths)} |`,
       `| Enemies felled | ${stats.felled} (${stats.greatFelled} great) |`,

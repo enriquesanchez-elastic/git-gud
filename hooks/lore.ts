@@ -3,6 +3,8 @@
  * no `$`, so the tests can pin them down.
  */
 
+import type { GitGudStats } from '../types'
+
 export type Rng = () => number
 
 export const pick = <T>(list: readonly T[], rng: Rng): T =>
@@ -282,6 +284,48 @@ export const isFogWall = (command: string): boolean =>
   splitCommand(command, false).some(
     segment => !SPEECH.test(segment) && (isRmRf(segment) || FOG_WALL.test(segment)),
   )
+
+/** Runes needed to rise from `level` to the next. */
+export const levelCost = (level: number): number => 500 * level
+
+/** Runes multiplier for a streak: +25% per five successes, capped at double. */
+export const streakMultiplier = (streak: number): number =>
+  1 + Math.min(Math.floor(streak / 5), 4) * 0.25
+
+const TITLES = [
+  [16, 'Elden Lord'],
+  [11, 'Champion'],
+  [7, 'Knight'],
+  [4, 'Tarnished'],
+  [2, 'Wanderer'],
+  [1, 'Hollow'],
+] as const
+
+/** What a level makes you. */
+export const titleOf = (level: number): string =>
+  TITLES.find(([min]) => level >= min)?.[1] ?? 'Hollow'
+
+export type Trophy = {
+  id: string
+  name: string
+  /** What to do to earn it. */
+  hint: string
+  earned: (s: GitGudStats) => boolean
+}
+
+export const TROPHIES: readonly Trophy[] = [
+  { id: 'first-blood', name: 'First Blood', hint: 'Die once.', earned: s => s.deaths >= 1 },
+  { id: 'fall-guy', name: 'Fall Guy', hint: 'Die three times in a row.', earned: s => s.deathStreak >= 3 },
+  { id: 'git-gud', name: 'Git Gud', hint: 'Light 10 bonfires.', earned: s => s.bonfires >= 10 },
+  { id: 'great-hunter', name: 'Great Hunter', hint: 'Fell a great enemy.', earned: s => s.greatFelled >= 1 },
+  { id: 'untouchable', name: 'Untouchable', hint: 'Win 20 in a row without dying.', earned: s => s.streak >= 20 },
+  { id: 'fog-diver', name: 'Fog Diver', hint: 'Survive a fog wall.', earned: s => s.fogsCrossed >= 1 },
+  { id: 'ascended', name: 'Ascended', hint: 'Reach level 5.', earned: s => s.level >= 5 },
+]
+
+/** Trophies the stats now qualify for that are not yet recorded. */
+export const newTrophies = (s: GitGudStats): Trophy[] =>
+  TROPHIES.filter(t => !s.trophies.includes(t.id) && t.earned(s))
 
 /** What a prompt of nothing but "git gud" is told. */
 export const GIT_GUD_REPLIES = [

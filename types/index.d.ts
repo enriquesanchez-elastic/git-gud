@@ -27,6 +27,16 @@ export type GitGudStats = {
   bloodstain: GitGudBloodstain | null
   /** The last test run died: the next green one is a GREAT enemy felled. */
   testsFailing: boolean
+  /** Raised by spending runes at `/bonfire level`. Starts at 1. */
+  level: number
+  /** Successes in a row; each five add 25% to runes earned (max 2x). */
+  streak: number
+  /** Deaths in a row, reset by any success. */
+  deathStreak: number
+  /** Fog-wall commands that were survived. */
+  fogsCrossed: number
+  /** Ids of earned trophies. */
+  trophies: string[]
 }
 
 declare module 'claude-code' {
