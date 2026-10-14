@@ -327,6 +327,42 @@ export const TROPHIES: readonly Trophy[] = [
 export const newTrophies = (s: GitGudStats): Trophy[] =>
   TROPHIES.filter(t => !s.trophies.includes(t.id) && t.earned(s))
 
+/** The in-game manual, shown by `/bonfire help`. Markdown. */
+export const GUIDE = `**git-gud: how to play**
+
+**The status line**
+\`Lv 3 · ᚱ 1,240 · ☠ 12 · 🩸 ᚱ 300 · 🔥 ×1.25\`
+- \`Lv\`: your level. 🔥 \`×\`: your streak bonus (only shown above ×1).
+- \`ᚱ\`: runes you hold. \`☠\`: lifetime deaths (it only goes up).
+- 🩸: runes waiting at your bloodstain.
+
+**Runes, death and the bloodstain**
+- Edits and successful commands earn runes. Tests and commits earn the most.
+- A failed command (or a failed edit) is a **death**: YOU DIED, and every rune you hold drops at a bloodstain, filed under the command that killed you.
+- Succeed at that same command to retrieve them. Die again first and the old bloodstain is lost forever.
+- Probing commands (\`grep\`, \`ls\`, \`git diff\`…) don't kill you unless hardcore mode is on.
+
+**Enemies and bonfires**
+- Tests pass: **ENEMY FELLED**. If they were failing before: **GREAT ENEMY FELLED**.
+- \`git commit\`: **BONFIRE LIT**.
+- Destructive commands (\`rm -rf\`, \`git push --force\`…) raise a fog wall. Surviving one counts.
+
+**Streaks**
+Every success in a row adds to your streak: +25% runes per five, up to ×2. Any death resets it.
+
+**Levels**
+\`/bonfire level\` spends runes to rise a level (the cost grows each time) and earns you a title.
+
+**Trophies**
+\`/bonfire trophies\` lists seven achievements and how to earn them.
+
+**Commands**
+- \`/bonfire\`: your stats. \`/bonfire level\`, \`/bonfire trophies\`, \`/bonfire help\`.
+- \`/bonfire rest\`: compacts the conversation (the enemies respawn).
+- \`/soapstone\`: read a message. \`/soapstone <text>\`: leave one for a future you.
+
+**Options** (in \`/config\`): \`hardcore\` (every failure kills), \`speak\` (say "You died" aloud), \`messages\` (a soapstone message at session start).`
+
 /** What a prompt of nothing but "git gud" is told. */
 export const GIT_GUD_REPLIES = [
   'Thou art already gud. Prompt dropped.',

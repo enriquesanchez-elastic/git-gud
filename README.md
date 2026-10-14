@@ -32,8 +32,18 @@ Your level, runes, deaths and bloodstain live in the status line (`ᚱ 1,240 · 
 
 A `grep` that finds nothing doesn't kill you (probing commands are exempt). Turn on **hardcore mode** and it does.
 
+### New here?
+
+Type `/bonfire help` in a session for the full guide. The short version:
+
+1. Work normally. Edits and commands earn runes (`ᚱ`).
+2. When something fails you **die** and drop your runes at a bloodstain (🩸).
+3. Succeed at the same command that killed you to get them back.
+4. Win several in a row to build a 🔥 streak. Spend runes on levels with `/bonfire level`.
+
 ### Commands
 
+- `/bonfire help` — the in-game guide.
 - `/bonfire` — rest a moment: runes held, deaths, enemies felled, bonfires lit, where your bloodstain is, and a verdict.
 - `/bonfire level` — spend runes to rise a level (cost grows each time). Level gives you a title: Hollow, Wanderer, Tarnished, Knight, Champion, Elden Lord.
 - `/bonfire trophies` — your achievements: First Blood, Fall Guy, Git Gud, Great Hunter, Untouchable, Fog Diver, Ascended.

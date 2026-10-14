@@ -11,6 +11,7 @@ import {
   DURATION_WORDS,
   GIT_GUD_REPLIES,
   isFogWall,
+  GUIDE,
   killerOf,
   kindOf,
   levelCost,
@@ -315,7 +316,7 @@ export const register: Register = (on, options) => {
       name: 'bonfire',
       description:
         'Rest at a bonfire: your level, deaths, runes and bloodstain. `level` spends runes to rise, `trophies` lists achievements, `rest` compacts (enemies respawn).',
-      argumentHint: '[level|trophies|rest]',
+      argumentHint: '[help|level|trophies|rest]',
     })
 
     await $.command.register({
@@ -323,6 +324,13 @@ export const register: Register = (on, options) => {
       description: 'Read a message from another Tarnished, or write one for a future you.',
       argumentHint: '[message]',
     })
+
+    const welcomed = await $.store.get('welcomed').catch(() => undefined)
+
+    if (welcomed !== true) {
+      $.ui.toast('Welcome, Tarnished. Type /bonfire help to learn the ways.', { timeoutMs: 10000 })
+      await $.store.set('welcomed', true).catch(() => undefined)
+    }
 
     if (isMessaging) {
       const own = (await $.store.get(MESSAGES_KEY).catch(() => [])) as unknown
@@ -445,6 +453,10 @@ export const register: Register = (on, options) => {
     await load($)
 
     const arg = (e.args ?? '').trim().toLowerCase()
+
+    if (arg === 'help' || arg === 'guide') {
+      return { text: GUIDE }
+    }
 
     if (arg === 'level') {
       const cost = levelCost(stats.level)

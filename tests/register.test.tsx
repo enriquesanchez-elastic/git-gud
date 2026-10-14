@@ -374,6 +374,28 @@ describe('register', () => {
     expect(res).toContain('Fog Diver')
   })
 
+  test('/bonfire help explains the game and the status line', async ($, on) => {
+    world(on)
+    await $.session.start(SESSION)
+
+    const res = JSON.stringify(await run($, 'bonfire', 'help'))
+
+    for (const word of ['Lv', 'bloodstain', 'streak', 'trophies', '/soapstone', 'hardcore']) {
+      expect(res, word).toContain(word)
+    }
+  })
+
+  test('a new player is welcomed once, and pointed at the guide', async ($, on) => {
+    const w = world(on)
+    await $.session.start(SESSION)
+    await $.session.start(SESSION)
+
+    const welcomes = w.toasts.filter(t => t.includes('/bonfire help'))
+
+    expect(welcomes).toHaveLength(1)
+    expect(w.mem.welcomed).toBe(true)
+  })
+
   test('npm test || true is not an enemy felled', async ($, on) => {
     const w = world(on)
     await $.session.start(SESSION)
