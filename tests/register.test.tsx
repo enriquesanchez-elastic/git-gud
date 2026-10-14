@@ -383,7 +383,7 @@ describe('register', () => {
 
     const res = JSON.stringify(await run($, 'bonfire', 'help'))
 
-    for (const word of ['Lv', 'bloodstain', 'to recover', 'streak', 'trophies', '/soapstone', 'hardcore']) {
+    for (const word of ['Lv', 'bloodstain', 'to recover', 'streak', 'trophies', '/soapstone', 'hardcore', '800–1,200', '2,000–3,000', '400–600', '50–300']) {
       expect(res, word).toContain(word)
     }
   })

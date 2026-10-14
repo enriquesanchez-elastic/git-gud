@@ -338,7 +338,16 @@ export const GUIDE = `**git-gud: how to play**
 - \`🩸 ᚱ 300 to recover\`: runes you dropped when you last died, waiting to be picked up again.
 
 **Runes: points you can lose**
-- Edits and successful commands earn runes. Tests and commits earn the most.
+How you win them:
+- Edit or Write succeeds: ᚱ 50–300
+- Tests pass: ᚱ 800–1,200
+- Tests pass after they were failing (GREAT ENEMY): ᚱ 2,000–3,000
+- \`git commit\`: ᚱ 400–600
+- Any other command that succeeds: ᚱ 10–60
+- A probing command that succeeds (\`grep\`, \`ls\`…): ᚱ 1–5
+- Your streak multiplies all of these (×1 up to ×2). Subagents' work earns nothing.
+
+How you lose them:
 - Runes are at risk. If a command **fails**, you **die** (YOU DIED) and every rune you hold is dropped.
 
 **The bloodstain: getting them back**
