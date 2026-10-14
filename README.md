@@ -56,7 +56,7 @@ Type `/bonfire help` in a session for the full guide. The short version:
 At the prompt of a Claude Code terminal session:
 
 ```
-/plugin install git-gud --marketplace <owner>/git-gud
+/plugin install git-gud --marketplace enriquesanchez-elastic/git-gud
 ```
 
 Answer `y` to add the marketplace, then pick a scope.
@@ -64,10 +64,10 @@ Answer `y` to add the marketplace, then pick a scope.
 From a shell:
 
 ```
-claude plugin install git-gud --marketplace <owner>/git-gud
+claude plugin install git-gud --marketplace enriquesanchez-elastic/git-gud
 ```
 
-In the desktop app: click **+** next to the prompt box → **Plugins** → **Add marketplace** with `<owner>/git-gud` → **Add plugin**.
+In the desktop app: click **+** next to the prompt box → **Plugins** → **Add marketplace** with `enriquesanchez-elastic/git-gud` → **Add plugin**.
 
 > Mods are early access in Claude Code: hooks modules load only where function hooks are enabled, and the API may change between releases.
 
