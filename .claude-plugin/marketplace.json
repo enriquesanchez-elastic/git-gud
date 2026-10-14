@@ -1,0 +1,13 @@
+{
+  "name": "git-gud",
+  "description": "git-gud: a Souls-like mod for Claude Code. YOU DIED, runes, bloodstains and bonfires.",
+  "owner": {
+    "name": "Enrique Sánchez"
+  },
+  "plugins": [
+    {
+      "name": "git-gud",
+      "source": "./"
+    }
+  ]
+}

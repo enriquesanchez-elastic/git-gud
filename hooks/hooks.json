@@ -1,0 +1,4 @@
+{
+  "description": "git-gud: Souls-style deaths, runes, bloodstains, bonfires and soapstone messages for Claude Code",
+  "modules": ["./register.tsx"]
+}

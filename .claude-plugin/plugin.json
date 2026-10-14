@@ -1,0 +1,31 @@
+{
+  "name": "git-gud",
+  "version": "0.1.0",
+  "description": "Prepare to code. A Souls-like for your terminal: YOU DIED when a command fails, runes for every edit, a bloodstain to retrieve, BONFIRE LIT on commit, and messages from other Tarnished.",
+  "author": {
+    "name": "Enrique Sánchez"
+  },
+  "license": "MIT",
+  "keywords": ["mod", "fun", "souls", "elden-ring", "dark-souls", "you-died"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "hardcore": {
+      "type": "boolean",
+      "title": "Hardcore mode",
+      "description": "Every failed command kills you, even a grep that found nothing.",
+      "default": false
+    },
+    "speak": {
+      "type": "boolean",
+      "title": "Announce deaths aloud",
+      "description": "Say \"You died\" with the system voice when you die (macOS `say`).",
+      "default": false
+    },
+    "messages": {
+      "type": "boolean",
+      "title": "Messages from other players",
+      "description": "Show a soapstone message when a session starts.",
+      "default": true
+    }
+  }
+}
