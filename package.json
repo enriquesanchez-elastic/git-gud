@@ -1,0 +1,17 @@
+{
+  "name": "git-gud",
+  "version": "0.1.0",
+  "description": "Prepare to code. A Souls-like mod for Claude Code.",
+  "private": true,
+  "license": "MIT",
+  "author": "Enrique Sánchez",
+  "scripts": {
+    "validate": "claude plugin validate . --strict",
+    "test": "claude plugin test",
+    "typecheck": "tsc -p .",
+    "check": "npm run validate && npm test && npm run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}
